@@ -1,0 +1,13 @@
+error_log
+/notes
+note/
+counterlog.txt
+buscar
+*.txt
+index.php.bkp_*
+jquery_1.9.1.min.js
+listar/
+notas_diversas.txt
+*_bkp*
+robots.txt
+/*.zip
