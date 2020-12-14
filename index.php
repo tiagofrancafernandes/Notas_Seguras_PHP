@@ -19,8 +19,7 @@ function dd($log)
 
 function reload_this_page()
 {
-    $http_protocol = $https = false ? 'https' : 'http' ;//TODO to get via $_SERVER
-    header('Location: '. $http_protocol .'://'.$_SERVER['HTTP_HOST'].$_SERVER['PATH_INFO']);
+    header('Location: '. $_SERVER['REQUEST_URI']);
 }
 
 /*
@@ -83,9 +82,11 @@ if (!file_exists(BASE_PATH)) {
     //mkdir(BASE_PATH, 777, TRUE);
 }
 
-
 //Get Filepath name for request uri
-$url = str_replace("/", "note.", "$_SERVER[REQUEST_URI]");
+$remove_from_url = array(explode('/', $_SERVER['SCRIPT_NAME']));
+$only_doc_name = str_replace($remove_from_url[0], "", $_SERVER['REQUEST_URI']);
+$only_doc_name = str_replace('//', "/", $only_doc_name);
+$url = str_replace("/", "note.", $only_doc_name);
 
 //Get Lock filename
 $lock = $url . ".lock";
