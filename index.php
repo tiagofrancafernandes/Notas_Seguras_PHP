@@ -83,10 +83,14 @@ if (!file_exists(BASE_PATH)) {
 }
 
 //Get Filepath name for request uri
+//------------------------------------------------------
 $remove_from_url = array(explode('/', $_SERVER['SCRIPT_NAME']));
 $only_doc_name = str_replace($remove_from_url[0], "", $_SERVER['REQUEST_URI']);
-$only_doc_name = str_replace('//', "/", $only_doc_name);
-$url = str_replace("/", "note.", $only_doc_name);
+$url = explode('/', $only_doc_name);
+$url = array_filter($url, 'strlen');
+$url = implode('.', $url);
+$url = 'note.notasnote.'.$url;
+//------------------------------------------------------
 
 //Get Lock filename
 $lock = $url . ".lock";
