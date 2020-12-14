@@ -1,3 +1,10 @@
+## !!! ATTENTION !!!
+
+This application is not safe. It is an old version of 'initedit / simplest-online-notepad'.
+
+I suggest you use the updated official version: https://github.com/initedit/simplest-online-notepad
+
+
 # Simplest online notepad for copy-paste
 
 [https://note.initedit.com](https://note.initedit.com)

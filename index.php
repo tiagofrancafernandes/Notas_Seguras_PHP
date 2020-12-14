@@ -6,6 +6,23 @@
  */
 define("BASE_PATH", "note/"); // Path (Relative to index.php) where notes will be saved
 header('X-XSS-Protection:0');
+
+function dump($log)
+{
+    return var_dump($log);
+}
+
+function dd($log)
+{
+    return die(dump($log));
+}
+
+function reload_this_page()
+{
+    $http_protocol = $https = false ? 'https' : 'http' ;//TODO to get via $_SERVER
+    header('Location: '. $http_protocol .'://'.$_SERVER['HTTP_HOST'].$_SERVER['PATH_INFO']);
+}
+
 /*
  * Start Function
  */
@@ -38,7 +55,8 @@ function download_file($file) {
     $_file = BASE_PATH . $file;
 
     //Check if file exists (for debug purpose)
-    if (file_exists($_file)) {
+    if (file_exists($_file))
+    {
         header('Content-Type: application/octet-stream');
         header('Content-Disposition: attachment; filename="' . $filename . '"');
         header('Expires: 0');
@@ -125,6 +143,7 @@ if (isset($_POST['data'])) {
             $isPAsswordProtected = false;
             $theData = "";
             $globalMessage = "Note was removed";
+            reload_this_page();
         }
     } else {
 
@@ -168,15 +187,22 @@ if (isset($_POST['data'])) {
             $fh = fopen(BASE_PATH . $myFile, 'w');
             fwrite($fh, $_POST['data']);
             $globalMessage = "Saved";
+            reload_this_page();
         }
     }
 } else {
 
     //Display files content as form was not submitted
     $myFile = "$url.txt";
-    $fh = fopen(BASE_PATH . $myFile, 'r');
-    $theData = fread($fh, filesize(BASE_PATH . $myFile));
-    if ($isPAsswordProtected) {
+    
+    if(file_exists(BASE_PATH . $myFile))
+    {
+        $fh = fopen(BASE_PATH . $myFile, 'r');
+        $theData = fread($fh, filesize(BASE_PATH . $myFile));
+    }
+
+    if ($isPAsswordProtected)
+    {
         $fh = fopen(BASE_PATH . $lock, 'r');
         $theTokenData = fread($fh, filesize(BASE_PATH . $lock));
         if ($theTokenData == $_SESSION["PWD"]) {
@@ -185,6 +211,7 @@ if (isset($_POST['data'])) {
     }
 }
 // Close file handler to prevent memory leak
+if(file_exists($myFile))
 fclose($fh);
 ?>
 <!DOCTYPE HTML>
@@ -245,10 +272,10 @@ fclose($fh);
         </style>
         <meta charset="utf-8" />
 <?php
-	$note = explode('/', $_SERVER[REQUEST_URI]);
+	$note = explode('/', $_SERVER['REQUEST_URI']);
 	$note_name = $note[count($note)-1];
 ?>
-        <title>Nota "<?=$note_name ?>" | <?php echo "#".$_SERVER[REQUEST_URI]." #".$note_name; ?></title>
+        <title>Nota "<?=$note_name ?>" | <?php echo "#".$_SERVER['PATH_INFO']." #".$note_name; ?></title>
         <link rel="icon" type="image/x-icon" href="favicon.svg"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         <script src="emmet/emmet.min.js"></script>
@@ -289,10 +316,7 @@ fclose($fh);
                 <?php echo ($isPAsswordProtected) ? $bgBloqueado : $bgDesBloqueado; ?>
                 <textarea name="data" spellcheck="false" id="textData" rows="20" style="width:100%;height:60vh;font-size:18px;box-sizing: border-box;"><?php echo $theData; ?></textarea>
                 <div>
-                    <div id="contenteditableId" contenteditable="true" style="background: #ca6262;text-align: left;width: 50%;margin: 1em auto 0 auto;border-radius: 5px;min-height: 3.3em;float: left;resize: both;overflow: auto;">
-#----------------------------------------------------
-#----------------------------------------------------
-                    </div>
+                    <div id="contenteditableId" contenteditable="true" style="background: #ca6262;text-align: left;width: 50%;margin: 1em auto 0 auto;border-radius: 5px;min-height: 3.3em;float: left;resize: both;overflow: auto;">#----------------------------------------------------<?="\n"?>#----------------------------------------------------</div>
                     <input type="button" id="inserir" value="Inserir isso" onclick="pasteHtmlAtCaret();" style="height: 1em;padding: 1em 2em 2em 2em;border-radius: 5px;cursor: pointer;float: left;font-size: 1em;margin: 1em auto 0 1em;">
                     <br clear="all">
                     
@@ -534,7 +558,7 @@ fclose($fh);
 
         fclose($fp);
 
-        $count = $count + 1;
+        $count = ++$count;
 
         echo "<span class='page-view'>Counter : " . $count . "</span>";
 
